@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeppTasks Auth</title>
+  <style>
+    body {
+      font-family: -apple-system, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 32px 24px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 { font-size: 20px; margin: 0 0 8px; }
+    .sub { color: #aaa; font-size: 14px; margin: 0 0 24px; }
+    .code-box {
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 13px;
+      word-break: break-all;
+      user-select: all;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+    .hint { color: #888; font-size: 12px; }
+    .error { color: #f66; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>ZeppTasks</h1>
+    <p class="sub" id="subtitle">Getting auth code...</p>
+    <div class="code-box" id="code-box" onclick="copyCode()"></div>
+    <p class="hint" id="hint"></p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const error = params.get('error');
+    const subtitle = document.getElementById('subtitle');
+    const codeBox = document.getElementById('code-box');
+    const hint = document.getElementById('hint');
+
+    if (error) {
+      subtitle.textContent = 'Authorization failed';
+      codeBox.textContent = error;
+      codeBox.classList.add('error');
+      hint.textContent = 'Check your Google Cloud Console settings.';
+    } else if (code) {
+      subtitle.textContent = 'Copy this code into Zepp app:';
+      codeBox.textContent = code;
+      hint.textContent = 'Tap the code to copy, then paste it into the Zepp Settings app.';
+    } else {
+      subtitle.textContent = 'No code found in URL.';
+      codeBox.textContent = window.location.href;
+      hint.textContent = 'Make sure this page is used as the OAuth redirect URI.';
+    }
+
+    function copyCode() {
+      navigator.clipboard.writeText(codeBox.textContent)
+        .then(() => { hint.textContent = 'Copied!'; })
+        .catch(() => { hint.textContent = 'Select and copy manually.'; });
+    }
+  </script>
+</body>
+</html>
